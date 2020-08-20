@@ -5,6 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 const USERS: Record<string, { name: string, balance: number }> = {
 
 }
+interface User {
+    name: string;
+    balance: number;
+}
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -17,15 +21,14 @@ server.use(bodyParser.urlencoded({ extended: false }));
 // });
 server.get("/user/create", (req, res) => {
     const ID = uuidv4();
-    const name = req.query.name;
-    const balance = req.query.balance;
-    if (typeof name !== 'string' || typeof balance !== 'number') {
+    if ( Number(req.query.name) || !Number(req.query.balance)) {
         res.send({ status: 400 });
     } else {
-        USERS[ID] = {
-            name: name,
-            balance: balance
+        const user: User = {
+            name: String(req.query.name),
+            balance: Number(req.query.balance)
         }
+        USERS[ID] = user;
         console.log(USERS);
         res.send({ 'result': ID });
     }
@@ -36,15 +39,14 @@ server.get("/user/:id", (req, res) => {
 })
 server.post("/user", (req, res) => {
     const ID = uuidv4();
-    const name = req.body.name;
-    const balance = req.body.balance;
-    if (typeof name !== 'string' || typeof balance !== 'number') {
+    if (Number(req.body.name) || !Number(req.body.balance)) {
         res.send({ status: 400 });
     } else {
-        USERS[ID] = {
-            name: name,
-            balance: balance
+        const user: User = {
+            name: String(req.body.name),
+            balance: Number(req.body.balance)
         }
+        USERS[ID] = user;
         console.log(USERS);
         res.send({ 'result': ID });
     }
